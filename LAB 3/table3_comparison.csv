@@ -1,0 +1,6 @@
+Model / Classifier,Accuracy Raw %,Accuracy Filtered %,Accuracy Edge %,Precision %,Recall %,F1-Score %,Training Time (s),Inference Time (ms/img)
+SVM,77.58,77.07,67.88,68.58,74.18,69.35,1660.2,11.667
+Random Forest,72.12,71.62,68.79,63.41,70.84,61.82,238.1,0.132
+KNN,70.2,70.71,63.33,60.87,68.08,63.55,0.0,1.071
+CNN Model 1 (ResNet101),79.8,80.0,35.35,74.21,65.05,67.31,1452.6,2.527
+CNN Model 2 (DenseNet121),81.92,80.2,46.06,76.39,69.39,71.45,1029.5,1.773

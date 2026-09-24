@@ -1,0 +1,6 @@
+Configuration,Low Threshold,High Threshold,Kernel Size,Edge Quality,Avg Edge Pixels/img,Edge Density (%)
+Canny-1,30,100,3x3,Noisy — many weak texture/false edges,1883,3.75
+Canny-2,50,150,3x3,"Balanced — continuous border, few false edges",645,1.29
+Canny-3,100,200,3x3,"Sparse — broken borders, fine detail lost",238,0.48
+Canny-4,50,150,5x5,"Balanced — continuous border, few false edges",369,0.74
+Canny-5,100,200,5x5,"Sparse — broken borders, fine detail lost",144,0.29
