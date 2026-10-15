@@ -1,4 +1,4 @@
-# Landmark Recognition Using SIFT — Lab Summary
+# Lab 06: Landmark Recognition Using SIFT — Lab Summary
 
 **Course:** CS-482 Computer Vision
 **Student:** Muhammad Majid Ali | FA23-BAI-045
