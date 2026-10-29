@@ -16,7 +16,7 @@ cv_sem_07/
 ├── lab 5/          — Feature Extraction & Dimensionality Reduction
 ├── lab 6/          — Landmark Recognition Using SIFT
 ├── lab 7/          — HOG + Genetic Algorithm Feature Selection
-└── assignment01/   — Canny Edge Detection on Skin Lesion Images
+└── lab 4/   — Canny Edge Detection on Skin Lesion Images
 ```
 
 ---
@@ -201,10 +201,10 @@ Applied **Histogram of Oriented Gradients (HOG)** feature extraction to BloodMNI
 
 ---
 
-## Assignment 01 — Canny Edge Detection on Skin Lesion Images
+## Lab 4 — Canny Edge Detection on Skin Lesion Images
 
-**Notebook:** `assignment01/canny-edge-det-on-skin-lesion.ipynb`  
-**Results:** `assignment01/results.md`
+**Notebook:** `lab 4/canny-edge-det-on-skin-lesion.ipynb`  
+**Results:** `lab 4/results.md`
 
 ### Overview
 Applied preprocessing + edge detection pipelines to 5 dermoscopy skin lesion images. Goal: segment lesion boundaries using Canny and Sobel detectors after various spatial filters, and quantify edge quality and segmentation accuracy.
