@@ -1,4 +1,4 @@
-# HOG vs SIFT Blood Cell Classification — Code Explanation for Instructor
+# HOG vs SIFT Blood Cell Classification — 
 
 **Student:** Muhammad Majid Ali  
 **Registration:** FA23-BAI-045  
@@ -380,9 +380,10 @@ The prediction was half correct: SIFT lost more under rotation, contrary to the 
 
 ### Accuracy
 
-`Accuracy = correct predictions / total predictions`
-
-As a percentage, multiply by 100. HOG clean test accuracy: `87 / 120 × 100 = 72.50%`.
+| Model | Validation accuracy | Clean test accuracy | Rotated test accuracy | Noisy test accuracy |
+|---|---:|---:|---:|---:|
+| HOG + SVM | 92/120 = **76.67%** | 87/120 = **72.50%** | 76/120 = **63.33%** | 44/120 = **36.67%** |
+| SIFT + SVM | 98/120 = **81.67%** | 94/120 = **78.33%** | 59/120 = **49.17%** | 94/120 = **78.33%** |
 
 ### Precision and recall for one class
 
