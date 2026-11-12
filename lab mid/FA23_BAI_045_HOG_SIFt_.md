@@ -51,14 +51,6 @@ For each pipeline:
 | Rotation angle | 20° about image centre, black (0) border fill |
 | Gaussian noise | mean 0, σ = 0.05 on [0, 1] pixel scale, clipped |
 
-### 2.3 Preprocessing Pipeline
-
-1. Load the official BloodMNIST split (train / val / test) at 64 × 64.
-2. Randomly select a fixed number of images per class, without replacement, using `RandomState(45)`.
-3. Convert RGB to grayscale.
-4. Resize to 128 × 128. Upsampling does not add new detail; it only standardises dimensions.
-5. Store as `uint8` (0–255).
-
 ---
 
 ## 3. Dataset Summary
@@ -132,8 +124,6 @@ Training feature matrix shape: **(400, 4608)**
 
 Each `C` value was trained on the training set and scored on the validation set. The model with the **highest validation accuracy** was kept. Ties keep the earlier (smaller) `C`.
 
-### 5.1 Validation Accuracy by `C`
-
 | `C` | HOG + SVM | SIFT + SVM |
 |---|---|---|
 | **0.1** | **76.67% (92/120)** | **81.67% (98/120)** |
@@ -145,51 +135,16 @@ Each `C` value was trained on the training set and scored on the validation set.
 
 > Macro-F1 is printed for each `C`, but selection is made on accuracy only.
 
-### 5.2 HOG Validation Confusion Matrix (Diagonal)
-
-| Class | Correct / 30 | Per-class Recall |
-|---|---|---|
-| Eosinophil | 16 | 53.33% |
-| Monocyte | 23 | 76.67% |
-| Neutrophil | 23 | 76.67% |
-| Platelet | 30 | 100.00% |
-| **Total** | **92 / 120** | **76.67% accuracy** |
-
-**Observation:** Platelets are classified perfectly. Eosinophils are the weakest class for HOG, with nearly half misclassified.
-
-> The off-diagonal values (which classes eosinophils are confused with) and the SIFT validation confusion matrix must be copied from the notebook output to complete this section.
-
 ---
 
-## 6. Test Results and Robustness
+## 6. Test Results
 
 The models were **frozen** after validation. Rotation and noise were applied only to test images before feature extraction. No retraining was done on transformed data.
 
-### 6.1 Test Accuracy
-
 | Model | Clean | Rotated 20° | Noisy (σ = 0.05) |
 |---|---|---|---|
-| HOG + SVM | 72.50% (87/120) | 63.33% (76/120) | 36.67% (44/120) |
+| HOG + SVM | 72.50% (87/120) | **63.33% (76/120)** | 36.67% (44/120) |
 | Grid SIFT + SVM | **78.33% (94/120)** | 49.17% (59/120) | **78.33% (94/120)** |
-
-### 6.2 Accuracy Drop from Clean
-
-`Accuracy drop = clean accuracy − transformed accuracy` (in percentage points)
-
-| Model | Rotation Drop | Noise Drop |
-|---|---|---|
-| HOG + SVM | **9.17 pp** | 35.83 pp |
-| Grid SIFT + SVM | 29.17 pp | **0.00 pp** |
-
-A smaller drop means more robustness to that transformation.
-
-### 6.3 Best Model per Condition
-
-| Condition | Better Model | Margin |
-|---|---|---|
-| Clean | Grid SIFT | +5.83 pp |
-| Rotated 20° | HOG | +14.16 pp |
-| Noisy | Grid SIFT | +41.66 pp |
 
 ---
 
@@ -201,7 +156,7 @@ Grid SIFT outperforms HOG on clean test data (78.33% vs 72.50%). It also led on 
 
 ### 7.2 Rotation Robustness
 
-HOG is clearly more robust to 20° rotation (9.17 pp drop vs 29.17 pp). Likely reasons:
+HOG is clearly more robust to 20° rotation: it drops by 9.17 pp, while Grid SIFT drops by 29.17 pp. Likely reasons:
 
 - **Grid SIFT lost its rotation invariance.** Standard SIFT is rotation-invariant because each keypoint is assigned a dominant orientation. In this pipeline every grid keypoint has orientation fixed at 0. Rotating the image therefore changes every descriptor, and each grid cell now covers a different part of the cell.
 - **Black corners from rotation.** `warpAffine` fills uncovered corners with 0. Corner grid keypoints then describe artificial edges, which affects the fixed-position SIFT layout more directly.
@@ -209,7 +164,7 @@ HOG is clearly more robust to 20° rotation (9.17 pp drop vs 29.17 pp). Likely r
 
 ### 7.3 Noise Robustness
 
-SIFT showed **no accuracy drop** under σ = 0.05 Gaussian noise, while HOG collapsed to 36.67%, close to the 25% chance level. Likely reasons:
+SIFT showed **no accuracy drop** (0.00 pp) under σ = 0.05 Gaussian noise, while HOG dropped by 35.83 pp to 36.67%, close to the 25% chance level. Likely reasons:
 
 - SIFT computes gradients after Gaussian smoothing at the keypoint's scale. With keypoint size 32, smoothing is strong enough to suppress pixel-level noise.
 - HOG uses raw pixel gradients with no prior smoothing. Noise adds random gradient directions to every histogram bin, and L2-Hys normalisation then rescales this noise-dominated histogram rather than removing it.
@@ -249,22 +204,7 @@ Grid SIFT is the better overall pipeline for this setup. It wins two of three te
 
 ---
 
-## 9. Evaluation Metrics
-
-| Metric | Formula |
-|---|---|
-| Accuracy | Correct predictions ÷ Total predictions |
-| Precision (per class) | TP ÷ (TP + FP) |
-| Recall (per class) | TP ÷ (TP + FN) |
-| F1 (per class) | 2 × (Precision × Recall) ÷ (Precision + Recall) |
-| Macro-F1 | Mean of the four per-class F1 scores (equal weight per class) |
-| Accuracy drop | Clean accuracy − Transformed accuracy |
-
-**Confusion matrix:** rows are actual labels, columns are predicted labels. Diagonal entries are correct predictions; off-diagonal entries are errors.
-
----
-
-## 10. Limitations
+## 9. Limitations
 
 - **Small sample size.** 30 test images per class means one image equals 3.33 pp of per-class accuracy, so small differences are not statistically reliable.
 - **Single run.** Results come from one seed. Different subsets may change the margins.
@@ -272,16 +212,3 @@ Grid SIFT is the better overall pipeline for this setup. It wins two of three te
 - **Upsampling.** Images are enlarged from 64 × 64 to 128 × 128; no real detail is added.
 - **Grayscale conversion.** Colour staining, which differs between blood cell types (e.g. eosinophil granules), is discarded.
 - **Selection by accuracy only.** Macro-F1 is reported but not used to choose `C`.
-
----
-
-## 11. Outstanding Items (Q5)
-
-The notebook currently ends at Q4 and has an empty final cell. The following must be added before submission:
-
-| Q5 Item | Status |
-|---|---|
-| Why HOG uses block normalisation | To be written |
-| Why `C` must not be selected on the test set | To be written (see Section 8) |
-| Most confused classes and the role of grayscale | Needs off-diagonal confusion-matrix values from the notebook |
-| AI-use log | To be written |
